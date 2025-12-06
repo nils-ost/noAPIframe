@@ -32,8 +32,8 @@ params = dict(
         'noapiframe',
     ],
     install_requires=[
-        'CherryPy>=18.10.0',
-        'cherrypy-cors>=1.7.0',
+        'CherryPy>=18.6.0',
+        'cherrypy-cors>=1.6.0',
         'pycryptodome>=3.23.0',
         'pymongo>=4.11.1'
     ],
