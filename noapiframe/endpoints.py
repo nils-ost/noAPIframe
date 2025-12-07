@@ -371,7 +371,7 @@ class LoginEndpointBase(object):
         elif cherrypy.request.method == 'GET':
             if user is not None:
                 p = self._session_cls._user_cls.get_by_login(user)
-                if p is not None:
+                if p['_id'] is not None:
                     s = self._session_cls({'user_id': p['_id'], 'complete': False, 'ip': get_client_ip()})
                     s['till'] = int(datetime.now().timestamp() + 300)
                     cookie = cherrypy.response.cookie
