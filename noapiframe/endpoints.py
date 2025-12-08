@@ -47,6 +47,8 @@ _not_updateable : list
     List of attr-names, that are deleted from PATCH requests but passed trough on POST requests
 _ro_attr : list
     List of attr-names, that are always read-only (deleted from POST and PATCH requests)
+_ro_all : bool
+    If set to True all attr are readonly (POST and PATCH requests are rejected)
     """
     _element = None
     _session_cls = None
@@ -63,6 +65,7 @@ _ro_attr : list
     _not_readable = list()
     _not_updateable = list()
     _ro_attr = list()
+    _ro_all = False
 
     def _filter_attrs4read(self, attr, is_other=False, is_owner=False, is_admin=False):
         for k in self._not_readable:
@@ -179,7 +182,7 @@ _ro_attr : list
 
         # POST
         elif cherrypy.request.method == 'POST':
-            if self._all_createable is None and (not is_authorized or (is_other and self._other_createable is None)):
+            if self._ro_all or (self._all_createable is None and (not is_authorized or (is_other and self._other_createable is None))):
                 cherrypy.response.status = 403
                 return {'error': 'access not allowed'}
             if element is not None:
@@ -205,7 +208,7 @@ _ro_attr : list
 
         # PATCH
         elif cherrypy.request.method == 'PATCH':
-            if self._all_updateable is None and (not is_authorized or (is_other and self._other_updateable is None)):
+            if self._ro_all or (self._all_updateable is None and (not is_authorized or (is_other and self._other_updateable is None))):
                 cherrypy.response.status = 403
                 return {'error': 'access not allowed'}
             if element is None:
