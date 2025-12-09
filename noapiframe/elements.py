@@ -231,10 +231,11 @@ class SettingBase(ElementBase):
         result._attr['_id'] = key
         fromdb = docDB.get(cls.__name__, key)
         if fromdb is not None:
-            result._attr = fromdb
+            for k, v in fromdb.items():
+                result._attr[k] = v
         elif key in cls._defaults:
-            result._attr = cls._defaults[key]
-            result._attr['_id'] = key
+            for k, v in cls._defaults[key].items():
+                result._attr[k] = v
         return result
 
     @classmethod
@@ -248,11 +249,6 @@ class SettingBase(ElementBase):
     @classmethod
     def set(cls, key, value):
         c = cls.get(key)
-        if c is None:
-            attr = dict()
-            if key in cls._defaults:
-                attr = cls._defaults[key]
-            c = cls(attr)
         c['_id'] = key
         c['value'] = value
         return c.save()
