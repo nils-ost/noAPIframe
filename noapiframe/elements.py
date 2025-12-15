@@ -138,6 +138,14 @@ class ElementBase(object):
                 else:
                     return {'no change': self['_id']}
 
+        # remove additional or obsolete attributes, that are not contained in _attrdef
+        remove_attr = list()
+        for k in self._attr.keys():
+            if k not in self._attrdef:
+                remove_attr.append(k)
+        for k in remove_attr:
+            self._attr.pop(k, None)
+
         self.save_pre()
         if self['_id'] is None:
             docDB.create(self.__class__.__name__, self._attr)
