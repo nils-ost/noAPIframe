@@ -80,9 +80,9 @@ class ElementBase(object):
         return result
 
     @classmethod
-    def all(cls):
+    def all(cls, filter={}):
         result = list()
-        for element in docDB.search_many(cls.__name__, {}):
+        for element in docDB.search_many(cls.__name__, filter):
             result.append(cls(element))
         return result
 
