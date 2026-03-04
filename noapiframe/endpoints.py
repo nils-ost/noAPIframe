@@ -21,6 +21,9 @@ _other_attr : str | None
     Set this to an attr-name which determines if the Element is available to other Users than owner and admin.
     The attr needs to return True if the Element is available to others, otherwise they are handeled like all (unauthorized) Users.
     If this variable is None the other rules (see below) are applied for all other Users.
+_admin_updateable : list | None
+    list of attr-names which are only writeable for admin Users, when updating an Element.
+    If None, all attributes are considered to be writeable following the subsequent rules.
 _other_readable : list | None
     list of attr-names which are readable for other Users. If None, Endpoint is not available for other Users reads.
 _other_createable : list | None
@@ -53,6 +56,7 @@ _ro_all : bool
     _element = None
     _session_cls = None
     _owner_attr = None
+    _admin_updateable = None
     _other_attr = None
     _other_readable = None
     _other_createable = None
@@ -102,7 +106,12 @@ _ro_all : bool
             attr.pop(ro, None)
         for ro in self._not_updateable:
             attr.pop(ro, None)
-        if is_owner or is_admin:
+        if is_admin:
+            return attr
+        if self._admin_updateable is not None:  # remove all only admin updateable attr before proceeding
+            for k in self._admin_updateable:
+                attr.pop(k, None)
+        if is_owner:
             return attr
         allowed_attr = list()
         if self._all_updateable is not None:
@@ -456,6 +465,7 @@ class UserEndpointBase(ElementEndpointBase):
     _session_cls = None  # Set this to a child-class of SessionBase in your deriveing class
     _element = None  # Set this to a child-class of UserBase in your deriveing class
     _owner_attr = '_id'
+    _admin_updateable = list(['admin'])  # only admins can change the admin flag
     _other_readable = list(['id', 'login', 'admin'])
     _not_readable = list(['pw'])
 
